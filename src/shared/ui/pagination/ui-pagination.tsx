@@ -7,6 +7,7 @@ interface UiPaginationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   isCircular?: boolean;
+  visiblePages?: number;
 }
 
 export const UiPagination = ({
@@ -15,9 +16,11 @@ export const UiPagination = ({
   currentPage,
   onPageChange,
   isCircular = false,
+  visiblePages = 5,
 }: UiPaginationProps) => {
   const pagination = new Pagination(currentPage, pageSize, totalItems, isCircular);
-  const pages = pagination.getPages();
+  const { pages, showFirstPage, showLastPage, showStartEllipsis, showEndEllipsis } =
+    pagination.getVisiblePages(visiblePages);
 
   return (
     <nav className={styles.pagination} role='navigation' aria-label='Pagination'>
@@ -49,6 +52,19 @@ export const UiPagination = ({
       </div>
 
       <div className={styles.pagination__pages}>
+        {showFirstPage && (
+          <>
+            <button
+              className={styles.pagination__page}
+              onClick={() => onPageChange(1)}
+              aria-label='Перейти на страницу 1'
+            >
+              1
+            </button>
+            {showStartEllipsis && <span className={styles.pagination__ellipsis}>...</span>}
+          </>
+        )}
+
         {pages.map((pageNumber) => (
           <button
             key={pageNumber}
@@ -60,6 +76,19 @@ export const UiPagination = ({
             {pageNumber}
           </button>
         ))}
+
+        {showLastPage && (
+          <>
+            {showEndEllipsis && <span className={styles.pagination__ellipsis}>...</span>}
+            <button
+              className={styles.pagination__page}
+              onClick={() => onPageChange(pagination.getLastPage())}
+              aria-label={`Перейти на страницу ${pagination.getLastPage()}`}
+            >
+              {pagination.getLastPage()}
+            </button>
+          </>
+        )}
       </div>
 
       <div className={styles.pagination__controls}>

@@ -69,6 +69,25 @@ class Pagination {
     }
     return Math.max(this.page - pages, 1);
   }
+
+  getVisiblePages(visiblePages: number = 5) {
+    const totalPages = this.getTotalPages();
+    const halfVisible = Math.floor(visiblePages / 2);
+    let start = Math.max(1, this.page - halfVisible);
+    let end = Math.min(totalPages, start + visiblePages - 1);
+
+    if (end - start + 1 < visiblePages) {
+      start = Math.max(1, end - visiblePages + 1);
+    }
+
+    return {
+      pages: Array.from({ length: end - start + 1 }, (_, i) => start + i),
+      showFirstPage: start > 1,
+      showLastPage: end < totalPages,
+      showStartEllipsis: start > 2,
+      showEndEllipsis: end < totalPages - 1
+    };
+  }
 }
 
 export default Pagination;
